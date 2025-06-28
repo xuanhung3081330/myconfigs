@@ -9,3 +9,4 @@ Host control-plane
 	HostName <IP HERE>
 	User <USER HERE>
 	Port 22
+	ForwardAgent yes
