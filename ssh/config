@@ -1,0 +1,11 @@
+Host github.com
+	HostName github.com
+	Port 22
+	User git
+	IdentityFile ~/.ssh/id_ed25519_github
+	IdentitiesOnly yes
+
+Host control-plane
+	HostName <IP HERE>
+	User <USER HERE>
+	Port 22
