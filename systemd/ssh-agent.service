@@ -1,0 +1,21 @@
+[Unit]
+Description=SSH Key Agent
+
+# Delays starting until after graphical login
+After=graphical.target
+
+[Service]
+# Tells systemd this is a long-running foreground process
+Type=simple
+
+# Sets an environment variable to the service process. "%t" expands to $XDG_RUNTIME_DIR, usually /run/user/<UID>
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+
+# Launches the SSH Agent in daemon mode (-D) and binds it to the socket (-a)
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+
+# Ensures the service is restarted if it crashes
+Restart=always
+
+[Install]
+WantedBy=default.target
