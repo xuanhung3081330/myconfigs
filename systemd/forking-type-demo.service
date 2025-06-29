@@ -1,0 +1,7 @@
+[Unit]
+Description=Forking type: Simulated daemon via background job
+
+
+[Service]
+Type=forking
+ExecStart="/home/user-hungnx/repos/myconfigs/scripts/play-with-fork.sh"

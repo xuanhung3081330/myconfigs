@@ -1,0 +1,7 @@
+[Unit]
+Description=Dependent service
+After=simple-type-demo.service
+Requires=simple-type-demo.service
+
+[Service]
+ExecStart=/bin/bash -c "echo Dependent service - running"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Simple service test
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c "echo Simple service - start && sleep 60 && echo Simple service - end"

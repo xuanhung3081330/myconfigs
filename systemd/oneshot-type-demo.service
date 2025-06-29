@@ -1,0 +1,6 @@
+[Unit]
+Description=Oneshot service test
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "echo OneShot service - start && sleep 60 && echo OneShot service - end"
