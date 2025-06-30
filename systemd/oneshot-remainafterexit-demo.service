@@ -1,0 +1,8 @@
+[Unit]
+Description=Oneshot service test with ExecStop and RemainAfterExit
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "echo Oneshot service - start && sleep 60 && echo Oneshot service - end"
+ExecStop=/bin/bash -c "echo Oneshot service - stop"
