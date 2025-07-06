@@ -32,4 +32,4 @@ ExecStart=/usr/local/bin/k3s \
 	'--flannel-backend=none' \
 	'--disable-network-policy' \
         '--disable=local-storage' \
-
+	'--write-kubeconfig-mode=644'
