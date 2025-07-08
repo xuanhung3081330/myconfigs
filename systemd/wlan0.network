@@ -1,0 +1,11 @@
+[Match]
+Name=wlan0
+
+[Network]
+Address=<CIDR HERE>
+Gateway=<IP HERE>
+DNS=<IP HERE>
+
+[Route]
+Destination=<CIDR HERE>
+Gateway=<IP HERE>
