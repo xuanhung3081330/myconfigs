@@ -56,3 +56,12 @@ fi
 if $DELETE && [[ $EUID -ne 0 ]]; then
 	echo "ERROR: Deletion requires root. Re-run with: sudo $0 -d ${KEEP:+-k $KEEP} ${CACHE_DIR:+-p $CACHE_DIR}"; exit 1
 fi
+
+$VERBOSE && echo "KEEP=$KEEP CACHE_DIR=$CACHE_DIR MODE=$([[ "$DELETE" = true ]] && echo delete || echo dry-run)"
+
+# ----- Build detention list -----
+# 1) List package files (*.pkg.tar.zst|xz) with their mtimes (newest first)
+# 2) Derive the package base name by stripping the last 3 dash-separated fields
+# 3) For each package base, keep the first $KEEP files and mark the rest for deletion
+
+# The array will hold full paths to files we intent to delete
