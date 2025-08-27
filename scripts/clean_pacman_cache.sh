@@ -59,9 +59,59 @@ fi
 
 $VERBOSE && echo "KEEP=$KEEP CACHE_DIR=$CACHE_DIR MODE=$([[ "$DELETE" = true ]] && echo delete || echo dry-run)"
 
-# ----- Build detention list -----
+# ----- Delete and keep N -----
 # 1) List package files (*.pkg.tar.zst|xz) with their mtimes (newest first)
 # 2) Derive the package base name by stripping the last 3 dash-separated fields
 # 3) For each package base, keep the first $KEEP files and mark the rest for deletion
 
 # The array will hold full paths to files we intent to delete
+mapfile -t TO_DELETE < <(
+	# List files with epoch mtime and full path, newest first
+	find "$CACHE_DIR" -maxdepth 1 -type f \
+		-name '*.pkg.tar.zst' \
+		! -name '*.sig' -printf '%T@ %p\n' \
+	| sort -nr \
+	| awk -v KEEP="$KEEP" -v dir="$CACHE_DIR/" '
+		{
+			# fields: $1 = mtime, $2 = full path
+			file = $2
+			base = file
+			sub(dir, "", base) # strip directory, now base is just the filename
+
+			# Remove "-<pkgver>-<pkgrel>-<arch>.pkg.tar.(zst|xz)"
+			# (pkgname can have dashes; pkgver/pkgrel/arch are the last 3 dash-separated field)
+			gsub(/-[^-]+-[^-]+-[^-]+\.pkg\.tar\.(zst|xz)$/, "", base)
+
+			count[base]++
+			if (count[base] > KEEP) print file
+		}
+		'	
+	)
+
+# Also delete matching .sig files when present
+EXTRA_SIGS=()
+for f in "${TO_DELETE[@]:-}"; 
+do
+	if [[ -f "$f.sig" ]]; then
+		EXTRA_SIGS+=("$f.sig")
+	fi
+done
+
+# Combine lists
+TO_DELETE=( "${TO_DELETE[@]:-}" "${EXTRA_SIGS[@]:-}" )
+
+# ----- DELETE -----
+if (( ${#TO_DELETE[@]} == 0 )); then
+	echo "Nothing to delete. Each package has <= $KEEP versions"
+	exit 0
+fi
+
+if ! $DELETE; then
+	echo "Dry run - the following files would be deleted:"
+	printf ' %s\n ' "${TO_DELETE[@]}"
+	echo "Run with -d (and sudo) to actually delete"
+else
+	echo "Deleting ${#TO_DELETE[@]} files..."
+	rm -v -- "${TO_DELETE[@]}"
+	echo "Done."
+fi
