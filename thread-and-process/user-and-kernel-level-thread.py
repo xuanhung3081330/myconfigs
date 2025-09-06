@@ -51,6 +51,25 @@ def measure_thread_context_switch(num_threads=NUM_THREADS, switch_count=1000):
     end = time.time()
     return end - start
 
+def measure_thread_memory_overhead(num_threads=NUM_THREADS):
+    # Begin tracking memory allocations
+    tracemalloc.start()
+    threads = [threading.Thread(target=dummy_task, args=(1000,)) for _ in range(num_threads)]
+
+    # Record peak memory so far
+    start_mem = tracemalloc.get_traced_memory()[1]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    # Get peak memory after creation and execution
+    end_mem = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+
+    # memory overhead
+    return end_mem - start_mem
+
 
 def measure_green_thread_creation(num_threads=NUM_THREADS):
     start = time.time()
@@ -77,6 +96,14 @@ def measure_green_context_switch(num_threads=NUM_THREADS, switch_count=1000):
     end = time.time()
     return end - start
 
+def measure_green_memory_overhead(num_threads=NUM_THREADS):
+    tracemalloc.start()
+    jobs = [gevent.spawn(dummy_task, 1000) for _ in range(num_threads)]
+    start_mem = tracemalloc.get_traced_memory()[1]
+    gevent.joinall(jobs)
+    end_mem = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+    return end_mem - start_mem
 
 if __name__ == "__main__":
     print("=== Thread creation time ===")
@@ -86,3 +113,7 @@ if __name__ == "__main__":
     print("=== Context switch time ===")
     print("Kernel threads:", measure_thread_context_switch())
     print("Green threads:", measure_green_thread_creation())
+
+    print("=== Memory Overhead (bytes) ===")
+    print("Kernel threads:", measure_thread_memory_overhead())
+    print("Green threads:", measure_green_memory_overhead())
