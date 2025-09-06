@@ -34,6 +34,24 @@ def measure_thread_creation(num_threads=NUM_THREADS):
     end = time.time()
     return end - start
 
+def measure_thread_context_switch(num_threads=NUM_THREADS, switch_count=1000):
+    counter = [0]
+
+    def switch_task(n):
+        for _ in range(n):
+            counter[0] += 1
+
+    # Create num_threads threads running the switch_task task
+    threads = [threading.Thread(target=switch_task, args=(switch_count, )) for _ in range(num_threads)]
+    start = time.time()
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    end = time.time()
+    return end - start
+
+
 def measure_green_thread_creation(num_threads=NUM_THREADS):
     start = time.time()
     
@@ -45,7 +63,26 @@ def measure_green_thread_creation(num_threads=NUM_THREADS):
     end = time.time()
     return end - start
 
+def measure_green_context_switch(num_threads=NUM_THREADS, switch_count=1000):
+    counter = [0]
+
+    def switch_task(n):
+        for _ in range(n):
+            counter[0] += 1
+            gevent.sleep(0) # yield control so another greenlet can run
+
+    jobs = [gevent.spawn(switch_task, switch_count) for _ in range(num_threads)]
+    start = time.time()
+    gevent.joinall(jobs)
+    end = time.time()
+    return end - start
+
+
 if __name__ == "__main__":
     print("=== Thread creation time ===")
     print("Kernel threads:", measure_thread_creation())
+    print("Green threads:", measure_green_thread_creation())
+
+    print("=== Context switch time ===")
+    print("Kernel threads:", measure_thread_context_switch())
     print("Green threads:", measure_green_thread_creation())
