@@ -1,0 +1,17 @@
+$TTL 8h
+@ IN SOA ns1.hungnx.xyz. admin.hungnx.xyz. (
+	2025092101 ; serial number
+	1d         ; refresh period
+	3h         ; retry period
+	3d         ; expire time
+	3h );      ; minimum TTL
+
+  	IN NS	ns1.hungnx.xyz.
+  	IN MX 	10 mail.hungnx.xyz.
+
+www	IN A	192.168.19.30
+www	IN AAAA 2001:db8:1::30 
+ns1	IN A	192.168.19.1
+ns1	IN AAAA 2001:db8:1::1
+mail	IN A	192.168.19.20
+mail	IN AAAA 2001:db8:1::20
