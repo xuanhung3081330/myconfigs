@@ -2,10 +2,11 @@
 Name=wlan0
 
 [Network]
-Address=<CIDR HERE>
-Gateway=<IP HERE>
-DNS=<IP HERE>
+Address=192.168.19.100/24
+Address=192.168.19.2/24
+Gateway=192.168.19.133
+DNS=192.168.19.133
 
 [Route]
-Destination=<CIDR HERE>
-Gateway=<IP HERE>
+Destination=10.1.0.0/16
+Gateway=192.168.19.134

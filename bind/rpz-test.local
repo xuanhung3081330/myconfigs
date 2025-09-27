@@ -1,0 +1,18 @@
+$TTL 10m
+@ IN SOA ns1.rpz-test.com. hostmaster.rpz-test.com. (
+	2025082701 ; serial number
+	1h         ; refresh period
+	1m         ; retry period
+	3d         ; expire time
+	1m)        ; minimum TTL
+
+  	IN NS	ns1.rpz-test.com.
+
+;Return an NXDOMAIN error
+example.org	IN CNAME .
+*.example.org	IN CNAME .
+
+;Drop queries
+example.net	IN CNAME rpz-drop.
+*.example.net	IN CNAME rpz-drop.
+google.com	IN CNAME rpz-drop.
